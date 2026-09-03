@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>文化國中704班日常環境教育地圖</title>
+  
+  <!-- 引入 Firebase 雲端資料庫 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --pikmin-bg: #f4f8f3;
@@ -19,7 +24,7 @@
 
     * {
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -35,7 +40,6 @@
       margin-right: auto;
     }
 
-    /* 頂部標題與認證 */
     header {
       background: #8bc34a;
       border: 2px solid var(--border-color);
@@ -44,12 +48,11 @@
       padding: 12px;
       text-align: center;
       margin-bottom: 12px;
-      position: relative;
     }
 
     h1 {
       margin: 0 0 8px 0;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       color: #fff;
       text-shadow: 1px 1px 0px var(--border-color);
     }
@@ -64,8 +67,8 @@
     .status-text {
       font-size: 0.8rem;
       color: #2e7d32;
-      background: rgba(255,255,255,0.8);
-      padding: 3px 8px;
+      background: rgba(255,255,255,0.9);
+      padding: 4px 10px;
       border-radius: 10px;
     }
 
@@ -73,21 +76,13 @@
       background: #ffca28;
       border: 2px solid var(--border-color);
       box-shadow: 2px 2px 0px var(--border-color);
-      padding: 8px 16px;
+      padding: 6px 14px;
       border-radius: 20px;
       font-weight: bold;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       cursor: pointer;
-      width: 100%;
-      max-width: 200px;
     }
 
-    .btn:active {
-      transform: translate(1px, 1px);
-      box-shadow: none;
-    }
-
-    /* 通用外框區塊 */
     .section-box {
       background: #ffffff;
       border: 2px solid var(--border-color);
@@ -101,20 +96,15 @@
       font-weight: bold;
       font-size: 1rem;
       margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
       border-bottom: 2px dashed #ddd;
       padding-bottom: 6px;
     }
 
-    /* 學員板凳區 (手機友善：頂端放置方便選取) */
     .bench-area {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      max-height: 200px;
-      overflow-y: auto;
+      min-height: 50px;
       padding: 6px;
       background: #fafafa;
       border: 1px dashed #ccc;
@@ -133,33 +123,13 @@
       align-items: center;
       justify-content: center;
       box-shadow: 1px 1px 0px rgba(0,0,0,0.1);
-      min-height: 34px;
     }
 
-    .student-card.girl {
-      background: var(--girl-pink);
-      border-color: var(--girl-pink-border);
-      color: var(--girl-text);
-    }
+    .student-card.girl { background: var(--girl-pink); border-color: var(--girl-pink-border); color: var(--girl-text); }
+    .student-card.boy { background: var(--boy-blue); border-color: var(--boy-blue-border); color: var(--boy-text); }
+    .student-card.selected { outline: 3px solid #ff9800; transform: scale(1.05); }
 
-    .student-card.boy {
-      background: var(--boy-blue);
-      border-color: var(--boy-blue-border);
-      color: var(--boy-text);
-    }
-
-    .student-card.selected {
-      outline: 3px solid #ff9800;
-      transform: scale(1.05);
-      background: #fff3e0;
-    }
-
-    /* 工作職缺清單 */
-    .job-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .job-list { display: flex; flex-direction: column; gap: 6px; }
 
     .job-card {
       background: #fff;
@@ -172,22 +142,10 @@
       min-height: 44px;
     }
 
-    .job-card.chief {
-      background: #fff9c4;
-      border-color: #fbc02d;
-      font-weight: bold;
-    }
+    .job-card.chief { background: #fff9c4; border-color: #fbc02d; font-weight: bold; }
 
-    .job-title {
-      font-size: 0.9rem;
-      outline: none;
-      flex-grow: 1;
-      padding-right: 6px;
-    }
-
-    .job-title[contenteditable="true"] {
-      border-bottom: 1px dashed #888;
-    }
+    .job-title { font-size: 0.9rem; flex-grow: 1; outline: none; }
+    .job-title[contenteditable="true"] { border-bottom: 1px dashed #888; }
 
     .drop-slot {
       min-width: 110px;
@@ -198,47 +156,24 @@
       align-items: center;
       justify-content: center;
       background: #fafafa;
-      padding: 2px;
     }
 
-    .drop-slot:empty::before {
-      content: "點擊放入";
-      font-size: 0.75rem;
-      color: #aaa;
-    }
-
-    /* 飄浮皮克敏動畫 */
-    .pikmin-float {
-      position: fixed;
-      font-size: 1.2rem;
-      pointer-events: none;
-      z-index: 99;
-      animation: floatAround 15s infinite linear;
-    }
-
-    @keyframes floatAround {
-      0% { top: 90%; left: 5%; }
-      50% { top: 10%; left: 80%; }
-      100% { top: 90%; left: 5%; }
-    }
+    .drop-slot:empty::before { content: "點擊放入"; font-size: 0.75rem; color: #aaa; }
   </style>
 </head>
 <body>
 
-  <div class="pikmin-float">🌱🔴</div>
-
   <header>
     <h1>🌱 文化國中704班<br>日常環境教育地圖 🌱</h1>
     <div class="auth-panel">
-      <span class="status-text" id="lock-status">🔒 瀏覽模式（請先解鎖編輯）</span>
+      <span class="status-text" id="lock-status">🔒 瀏覽模式（實時同步中）</span>
       <button class="btn" onclick="toggleEdit()">輸入編輯密碼</button>
     </div>
   </header>
 
   <div class="section-box">
-    <div class="section-title">🪑 待分派學員區（先點學員，再點工作框）</div>
-    <div class="bench-area" id="bench-area" onclick="returnToBench(event)">
-      </div>
+    <div class="section-title">🪑 待分派學員區</div>
+    <div class="bench-area" id="bench-area" onclick="returnToBench()"></div>
   </div>
 
   <div class="section-box">
@@ -252,21 +187,33 @@
   </div>
 
   <script>
+    // -----------------------------------------------------------------
+    // 🔴 請將此處替換為您的 Firebase 設定 (步驟二會教您如何取得)
+    // -----------------------------------------------------------------
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    // -----------------------------------------------------------------
+
+    // 初始化 Firebase
+    let dbRef = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      dbRef = firebase.database().ref('704_env_map');
+    } catch(e) {
+      console.log("Firebase 尚未正確設定連線");
+    }
+
     let isEditable = false;
     let selectedStudentEl = null;
 
-    const outerJobData = [
-      "衛生股長", "火紅開路先鋒", "深藍水溝刺客", "閃電高處特工", 
-      "大力紫霸主", "飛行紙屑搜查官", "硬石破垢衝鋒隊"
-    ];
-
-    const innerJobData = [
-      "保健股長", "智窗", "慧窗", "黑板", "書櫃", "陽台", "走廊", 
-      "垃圾", "回收", "讀書角", "第一排", "第二排", "第三排", 
-      "第四排", "第五六排", "前後左右", "洗手台", "公用餐具"
-    ];
-
-    const students = [
+    const defaultStudents = [
       { id: "01", name: "01李岱臻", gender: "girl" },
       { id: "02", name: "02林永喜", gender: "girl" },
       { id: "03", name: "03林品妍", gender: "girl" },
@@ -294,57 +241,132 @@
       { id: "26", name: "26鍾牧辰", gender: "boy" }
     ];
 
+    const defaultOuterJobs = ["衛生股長", "火紅開路先鋒", "深藍水溝刺客", "閃電高處特工", "大力紫霸主", "飛行紙屑搜查官", "硬石破垢衝鋒隊"];
+    const defaultInnerJobs = ["保健股長", "智窗", "慧窗", "黑板", "書櫃", "陽台", "走廊", "垃圾", "回收", "讀書角", "第一排", "第二排", "第三排", "第四排", "第五六排", "前後左右", "洗手台", "公用餐具"];
+
+    // 頁面初始化
     function init() {
-      renderJobs('outer-jobs', outerJobData);
-      renderJobs('inner-jobs', innerJobData);
-      renderStudents();
+      renderBaseStructure();
+      if (dbRef) {
+        // 監聽雲端資料庫變更 (全體即時同步)
+        dbRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            applyCloudData(data);
+          } else {
+            // 資料庫若為空，寫入預設值
+            saveToCloud();
+          }
+        });
+      }
     }
 
-    function renderJobs(containerId, jobList) {
+    function renderBaseStructure() {
+      renderJobList('outer-jobs', defaultOuterJobs, 'outer');
+      renderJobList('inner-jobs', defaultInnerJobs, 'inner');
+      
+      const bench = document.getElementById('bench-area');
+      bench.innerHTML = '';
+      defaultStudents.forEach(s => {
+        const card = document.createElement('div');
+        card.className = `student-card ${s.gender}`;
+        card.id = `student-${s.id}`;
+        card.innerText = s.name;
+        card.onclick = (e) => { e.stopPropagation(); handleStudentClick(card); };
+        bench.appendChild(card);
+      });
+    }
+
+    function renderJobList(containerId, jobs, prefix) {
       const container = document.getElementById(containerId);
       container.innerHTML = '';
-      jobList.forEach((job, index) => {
-        const isChief = index === 0;
+      jobs.forEach((job, idx) => {
+        const isChief = idx === 0;
         const card = document.createElement('div');
         card.className = `job-card ${isChief ? 'chief' : ''}`;
         card.innerHTML = `
-          <span class="job-title" contenteditable="${isEditable}">${job}</span>
-          <div class="drop-slot" onclick="handleSlotClick(this)"></div>
+          <span class="job-title" id="title-${prefix}-${idx}" contenteditable="${isEditable}" onblur="saveToCloud()">${job}</span>
+          <div class="drop-slot" id="slot-${prefix}-${idx}" onclick="handleSlotClick(this)"></div>
         `;
         container.appendChild(card);
       });
     }
 
-    function renderStudents() {
-      const bench = document.getElementById('bench-area');
-      bench.innerHTML = '';
-      students.forEach(s => {
-        const card = document.createElement('div');
-        card.className = `student-card ${s.gender}`;
-        card.id = `student-${s.id}`;
-        card.innerText = s.name;
-        card.onclick = (e) => {
-          e.stopPropagation();
-          handleStudentClick(card);
-        };
-        bench.appendChild(card);
+    // 將資料儲存至 Firebase 雲端
+    function saveToCloud() {
+      if (!dbRef || !isEditable) return;
+
+      const state = {
+        outerTitles: [],
+        innerTitles: [],
+        assignments: {} // slotId: studentId
+      };
+
+      defaultOuterJobs.forEach((_, idx) => {
+        state.outerTitles.push(document.getElementById(`title-outer-${idx}`).innerText);
+        const slot = document.getElementById(`slot-outer-${idx}`);
+        if (slot.children.length > 0) state.assignments[`slot-outer-${idx}`] = slot.children[0].id;
       });
+
+      defaultInnerJobs.forEach((_, idx) => {
+        state.innerTitles.push(document.getElementById(`title-inner-${idx}`).innerText);
+        const slot = document.getElementById(`slot-inner-${idx}`);
+        if (slot.children.length > 0) state.assignments[`slot-inner-${idx}`] = slot.children[0].id;
+      });
+
+      dbRef.set(state);
     }
 
+    // 讀取並渲染雲端最新資料
+    function applyCloudData(data) {
+      // 1. 更新職稱
+      if (data.outerTitles) {
+        data.outerTitles.forEach((title, idx) => {
+          const el = document.getElementById(`title-outer-${idx}`);
+          if (el && el !== document.activeElement) el.innerText = title;
+        });
+      }
+      if (data.innerTitles) {
+        data.innerTitles.forEach((title, idx) => {
+          const el = document.getElementById(`title-inner-${idx}`);
+          if (el && el !== document.activeElement) el.innerText = title;
+        });
+      }
+
+      // 2. 重置所有學員回板凳區
+      const bench = document.getElementById('bench-area');
+      defaultStudents.forEach(s => {
+        const studentEl = document.getElementById(`student-${s.id}`);
+        if (studentEl) bench.appendChild(studentEl);
+      });
+
+      // 3. 根據雲端分派學員至對應位置
+      if (data.assignments) {
+        Object.keys(data.assignments).forEach(slotId => {
+          const slot = document.getElementById(slotId);
+          const studentEl = document.getElementById(data.assignments[slotId]);
+          if (slot && studentEl) {
+            slot.appendChild(studentEl);
+          }
+        });
+      }
+    }
+
+    // 解鎖密碼機制
     function toggleEdit() {
       if (!isEditable) {
         const pwd = prompt("請輸入編輯密碼：");
         if (pwd === "envedu704") {
           isEditable = true;
-          document.getElementById('lock-status').innerText = "🔓 編輯模式已解鎖（點擊可分派/編輯名稱）";
+          document.getElementById('lock-status').innerText = "🔓 編輯模式已解鎖（變更將實時同步至所有人）";
           document.querySelectorAll('.job-title').forEach(el => el.setAttribute('contenteditable', 'true'));
-          alert("驗證成功！可直接點擊姓名卡片與格子進行分派。");
+          alert("驗證成功！點擊學員與格子即可進行排班作業。");
         } else if (pwd !== null) {
           alert("密碼錯誤！");
         }
       } else {
         isEditable = false;
-        document.getElementById('lock-status').innerText = "🔒 瀏覽模式（已鎖定）";
+        document.getElementById('lock-status').innerText = "🔒 瀏覽模式（實時同步中）";
         document.querySelectorAll('.job-title').forEach(el => el.setAttribute('contenteditable', 'false'));
         clearSelection();
       }
@@ -352,13 +374,7 @@
 
     function handleStudentClick(cardEl) {
       if (!isEditable) return;
-
-      // 如果點擊的是已經選中的卡片，取消選取
-      if (selectedStudentEl === cardEl) {
-        clearSelection();
-        return;
-      }
-
+      if (selectedStudentEl === cardEl) { clearSelection(); return; }
       clearSelection();
       selectedStudentEl = cardEl;
       cardEl.classList.add('selected');
@@ -366,28 +382,22 @@
 
     function handleSlotClick(slotEl) {
       if (!isEditable) return;
-
-      // 如果目前手頭上有選中的學生卡片
       if (selectedStudentEl) {
-        // 如果該格子內已有學員，將原學員移回板凳區
-        if (slotEl.children.length > 0) {
-          document.getElementById('bench-area').appendChild(slotEl.children[0]);
-        }
+        if (slotEl.children.length > 0) document.getElementById('bench-area').appendChild(slotEl.children[0]);
         slotEl.appendChild(selectedStudentEl);
         clearSelection();
-      } 
-      // 如果沒有選中學生，但點擊了已有學員的格子 -> 將該學員抽回板凳區
-      else if (slotEl.children.length > 0) {
+        saveToCloud();
+      } else if (slotEl.children.length > 0) {
         document.getElementById('bench-area').appendChild(slotEl.children[0]);
+        saveToCloud();
       }
     }
 
-    function returnToBench(e) {
+    function returnToBench() {
       if (!isEditable || !selectedStudentEl) return;
-      if (e.target.id === 'bench-area') {
-        document.getElementById('bench-area').appendChild(selectedStudentEl);
-        clearSelection();
-      }
+      document.getElementById('bench-area').appendChild(selectedStudentEl);
+      clearSelection();
+      saveToCloud();
     }
 
     function clearSelection() {
