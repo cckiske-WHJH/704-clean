@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文化國中704班日常環境教育地圖</title>
+  <style>
+    :root {
+      --pikmin-green: #689f38;
+      --pikmin-bg: #f4f8f3;
+      --panel-bg: #ffffff;
+      --border-color: #2d3748;
+      --girl-pink: #fce4ec;
+      --girl-pink-border: #f48fb1;
+      --girl-text: #ad1457;
+      --boy-blue: #e1f5fe;
+      --boy-blue-border: #81d4fa;
+      --boy-text: #0277bd;
+      --shadow: 3px 3px 0px var(--border-color);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Chalkboard SE', 'Comic Sans MS', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    }
+
+    body {
+      background-color: var(--pikmin-bg);
+      background-image: radial-gradient(#aed581 10%, transparent 11%);
+      background-size: 20px 20px;
+      margin: 0;
+      padding: 15px;
+      color: #333;
+    }
+
+    /* Header & Controls */
+    header {
+      background: #8bc34a;
+      border: 3px solid var(--border-color);
+      box-shadow: var(--shadow);
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 1.5rem;
+      color: #fff;
+      text-shadow: 2px 2px 0px var(--border-color);
+    }
+
+    .auth-panel {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #ffca28;
+      border: 2px solid var(--border-color);
+      box-shadow: 2px 2px 0px var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: none;
+    }
+
+    /* Main Layout Grid */
+    .map-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      position: relative;
+    }
+
+    @media (max-width: 850px) {
+      .map-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .zone-box {
+      background: var(--panel-bg);
+      border: 3px solid var(--border-color);
+      box-shadow: var(--shadow);
+      border-radius: 15px;
+      padding: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .zone-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Top Left: Job Zones */
+    .jobs-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .job-section {
+      background: #f1f8e9;
+      border: 2px dashed #9ccc65;
+      border-radius: 10px;
+      padding: 8px;
+    }
+
+    .job-card {
+      background: #fff;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 42px;
+    }
+
+    .job-card.chief {
+      background: #fff9c4;
+      border-color: #fbc02d;
+      font-weight: bold;
+    }
+
+    .job-title {
+      font-size: 0.85rem;
+      outline: none;
+      max-width: 60%;
+    }
+
+    .job-title[contenteditable="true"] {
+      border-bottom: 1px dashed #666;
+    }
+
+    .drop-slot {
+      min-width: 80px;
+      min-height: 30px;
+      border: 1px dashed #bbb;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+    }
+
+    /* Top Right: FamilyMart & Outdoor Map */
+    .outdoor-map {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 10px;
+      min-height: 250px;
+    }
+
+    .familymart {
+      background: #e8f5e9;
+      border: 3px solid #2e7d32;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .familymart-logo {
+      background: #00a859;
+      color: white;
+      padding: 4px;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      border-bottom: 4px solid #0066b2;
+    }
+
+    .outdoor-area {
+      background: #fff8e1;
+      border: 2px solid #d7ccc8;
+      border-radius: 10px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sidewalk {
+      background: #e0e0e0;
+      border: 2px dashed #9e9e9e;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .bike-shed {
+      background: #cfd8dc;
+      border: 2px solid #607d8b;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    /* Bottom Left: Classroom Map */
+    .classroom-container {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 8px;
+      background: #fffde7;
+      border: 2px solid #dce775;
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 280px;
+      position: relative;
+    }
+
+    .blackboard-zone {
+      background: #2e7d32;
+      color: white;
+      border: 3px solid #1b5e20;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-lr;
+      font-weight: bold;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      box-shadow: 2px 0px 0px #000;
+    }
+
+    .classroom-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .class-top-wall {
+      display: flex;
+      justify-content: space-between;
+      background: #e1f5fe;
+      border: 1px solid #81d4fa;
+      padding: 5px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+    }
+
+    .class-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+      border: 2px dashed #c0ca33;
+      border-radius: 8px;
+      background: #f0f4c3;
+      color: #827717;
+      font-weight: bold;
+    }
+
+    .class-bottom-wall {
+      background: #ffe0b2;
+      border: 1px solid #ffcc80;
+      padding: 5px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+    }
+
+    .corridor {
+      background: #d7ccc8;
+      border-radius: 4px;
+      padding: 4px;
+      margin-top: 4px;
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    .balcony-sink {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      background: #b2ebf2;
+      border: 1px solid #00bcd4;
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+    }
+
+    /* Bottom Right: Bench Area (Roster) */
+    .bench-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 5px;
+      background: #fafafa;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+    }
+
+    .student-card {
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: 2px solid;
+      cursor: grab;
+      user-select: none;
+      display: inline-block;
+      box-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+      transition: transform 0.1s;
+    }
+
+    .student-card:active {
+      cursor: grabbing;
+      transform: scale(1.05);
+    }
+
+    .student-card.girl {
+      background: var(--girl-pink);
+      border-color: var(--girl-pink-border);
+      color: var(--girl-text);
+    }
+
+    .student-card.boy {
+      background: var(--boy-blue);
+      border-color: var(--boy-blue-border);
+      color: var(--boy-text);
+    }
+
+    .student-card.selected {
+      outline: 3px solid #ff9800;
+    }
+
+    /* Animated Pikmin */
+    .pikmin-sprite {
+      position: absolute;
+      font-size: 1.2rem;
+      pointer-events: none;
+      animation: wander 12s infinite linear;
+      z-index: 10;
+    }
+
+    @keyframes wander {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(100px, 30px); }
+      50% { transform: translate(50px, 120px); }
+      75% { transform: translate(200px, 60px); }
+      100% { transform: translate(0, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌱 文化國中704班日常環境教育地圖 🌱</h1>
+    <div class="auth-panel">
+      <span id="lock-status">🔒 瀏覽模式（雙擊姓名可分派，輸入密碼解鎖編輯）</span>
+      <button class="btn" onclick="toggleEdit()">輸入編輯密碼</button>
+    </div>
+  </header>
+
+  <div class="pikmin-sprite" style="top:20px; left:10%;">🌱🔴</div>
+  <div class="pikmin-sprite" style="top:150px; right:15%; animation-delay: -3s;">🌸🟡</div>
+  <div class="pikmin-sprite" style="bottom:50px; left:40%; animation-delay: -6s;">🌼🔵</div>
+
+  <div class="map-grid">
+
+    <div class="zone-box">
+      <div class="zone-title">📋 清掃工作職缺區域</div>
+      <div class="jobs-container">
+        
+        <div class="job-section">
+          <div style="font-weight:bold; color:#2e7d32; margin-bottom:5px;">🧹 外掃區 (7)</div>
+          <div id="outer-jobs"></div>
+        </div>
+
+        <div class="job-section">
+          <div style="font-weight:bold; color:#1565c0; margin-bottom:5px;">🧽 內掃區 (18)</div>
+          <div id="inner-jobs"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="zone-box">
+      <div class="zone-title">🏪 外掃區域 (Family Mart & 步道)</div>
+      <div class="outdoor-map">
+        <div class="familymart">
+          <div class="familymart-logo">FamilyMart</div>
+          <p style="font-size:0.8rem; color:#444; margin-top:10px;">便利商店</p>
+        </div>
+        <div class="outdoor-area">
+          <div class="sidewalk">🚶‍♂️ 直線人行道 (外掃區) 🚲</div>
+          <div class="bike-shed">🚲 腳踏車棚 (704外掃負責範圍)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="zone-box">
+      <div class="zone-title">🏫 教室配置圖 (內掃區域)</div>
+      <div class="classroom-container">
+        
+        <div class="blackboard-zone">
+          黑板 (面朝右) 🟩
+        </div>
+
+        <div class="classroom-inner">
+          <div class="class-top-wall">
+            <span>📚 圖書角</span>
+            <span>🪟 智窗</span>
+          </div>
+
+          <div class="class-center">
+            704 學生座位區 (第一~六排)
+          </div>
+
+          <div class="class-bottom-wall">
+            <span>🪟 慧窗</span>
+            <div class="corridor">🚪 前門 | 🚶 Corridor 走廊 | 🚪 後門</div>
+          </div>
+        </div>
+
+        <div class="balcony-sink">
+          🌅 陽台 & 🚰 洗手台 (後門外)
+        </div>
+
+      </div>
+    </div>
+
+    <div class="zone-box">
+      <div class="zone-title">🪑 板凳區 (點擊/拖曳學員卡片至職務)</div>
+      <div class="bench-area" id="bench-area" ondragover="allowDrop(event)" ondrop="dropToBench(event)">
+        </div>
+    </div>
+
+  </div>
+
+  <script>
+    let isEditable = false;
+    let selectedStudent = null;
+
+    const outerJobData = [
+      "衛生股長", "火紅開路先鋒", "深藍水溝刺客", "閃電高處特工", 
+      "大力紫霸主", "飛行紙屑搜查官", "硬石破垢衝鋒隊"
+    ];
+
+    const innerJobData = [
+      "保健股長", "智窗", "慧窗", "黑板", "書櫃", "陽台", "走廊", 
+      "垃圾", "回收", "讀書角", "第一排", "第二排", "第三排", 
+      "第四排", "第五六排", "前後左右", "洗手台", "公用餐具"
+    ];
+
+    const students = [
+      { id: "01", name: "01李岱臻", gender: "girl" },
+      { id: "02", name: "02林永喜", gender: "girl" },
+      { id: "03", name: "03林品妍", gender: "girl" },
+      { id: "04", name: "04林品璇", gender: "girl" },
+      { id: "05", name: "05林妤晴", gender: "girl" },
+      { id: "06", name: "06邱子芯", gender: "girl" },
+      { id: "07", name: "07張采穎", gender: "girl" },
+      { id: "08", name: "08張祐瑄", gender: "girl" },
+      { id: "09", name: "09陳依槿", gender: "girl" },
+      { id: "10", name: "10劉憶萱", gender: "girl" },
+      { id: "11", name: "11賴沛金", gender: "girl" },
+      { id: "12", name: "12賴苡安", gender: "girl" },
+      { id: "13", name: "13謝苡柔", gender: "girl" },
+      { id: "15", name: "15王辰祐", gender: "boy" },
+      { id: "16", name: "16林弘鎰", gender: "boy" },
+      { id: "17", name: "17林裕鈁", gender: "boy" },
+      { id: "18", name: "18邱渤洲", gender: "boy" },
+      { id: "19", name: "19紀杰", gender: "boy" },
+      { id: "20", name: "20張承煜", gender: "boy" },
+      { id: "21", name: "21陳佑睿", gender: "boy" },
+      { id: "22", name: "22陳利昌", gender: "boy" },
+      { id: "23", name: "23游尚睿", gender: "boy" },
+      { id: "24", name: "24楊佳恩", gender: "boy" },
+      { id: "25", name: "25賴誠恩", gender: "boy" },
+      { id: "26", name: "26鍾牧辰", gender: "boy" }
+    ];
+
+    function init() {
+      renderJobs('outer-jobs', outerJobData);
+      renderJobs('inner-jobs', innerJobData);
+      renderStudents();
+    }
+
+    function renderJobs(containerId, jobList) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      jobList.forEach((job, index) => {
+        const isChief = index === 0;
+        const card = document.createElement('div');
+        card.className = `job-card ${isChief ? 'chief' : ''}`;
+        card.innerHTML = `
+          <span class="job-title" contenteditable="${isEditable}">${job}</span>
+          <div class="drop-slot" ondragover="allowDrop(event)" ondrop="dropToSlot(event)" onclick="assignSelected(this)"></div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderStudents() {
+      const bench = document.getElementById('bench-area');
+      bench.innerHTML = '';
+      students.forEach(s => {
+        const card = document.createElement('div');
+        card.className = `student-card ${s.gender}`;
+        card.id = `student-${s.id}`;
+        card.innerText = s.name;
+        card.draggable = true;
+        card.ondragstart = (e) => drag(e, s.id);
+        card.onclick = () => selectStudent(s.id);
+        bench.appendChild(card);
+      });
+    }
+
+    function toggleEdit() {
+      if (!isEditable) {
+        const pwd = prompt("請輸入編輯密碼：");
+        if (pwd === "envedu704") {
+          isEditable = true;
+          document.getElementById('lock-status').innerText = "🔓 編輯模式已解鎖（可修改職務名稱與分派人員）";
+          document.querySelectorAll('.job-title').forEach(el => el.setAttribute('contenteditable', 'true'));
+          alert("驗證成功！您現在可以修改職務名稱或拖曳名單。");
+        } else if (pwd !== null) {
+          alert("密碼錯誤！");
+        }
+      } else {
+        isEditable = false;
+        document.getElementById('lock-status').innerText = "🔒 瀏覽模式（雙擊姓名可分派，輸入密碼解鎖編輯）";
+        document.querySelectorAll('.job-title').forEach(el => el.setAttribute('contenteditable', 'false'));
+      }
+    }
+
+    /* Drag and Drop API Functions */
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev, id) {
+      if (!isEditable) return;
+      ev.dataTransfer.setData("text", id);
+    }
+
+    function dropToSlot(ev) {
+      ev.preventDefault();
+      if (!isEditable) return;
+      const studentId = ev.dataTransfer.getData("text");
+      const studentEl = document.getElementById(`student-${studentId}`);
+      if (studentEl) {
+        const slot = ev.currentTarget;
+        if (slot.children.length > 0) {
+          document.getElementById('bench-area').appendChild(slot.children[0]);
+        }
+        slot.appendChild(studentEl);
+      }
+    }
+
+    function dropToBench(ev) {
+      ev.preventDefault();
+      if (!isEditable) return;
+      const studentId = ev.dataTransfer.getData("text");
+      const studentEl = document.getElementById(`student-${studentId}`);
+      if (studentEl) {
+        document.getElementById('bench-area').appendChild(studentEl);
+      }
+    }
+
+    /* Tap-to-assign fallback for mobile friendliness */
+    function selectStudent(id) {
+      if (!isEditable) return;
+      document.querySelectorAll('.student-card').forEach(c => c.classList.remove('selected'));
+      selectedStudent = document.getElementById(`student-${id}`);
+      if (selectedStudent) {
+        selectedStudent.classList.add('selected');
+      }
+    }
+
+    function assignSelected(slot) {
+      if (!isEditable || !selectedStudent) return;
+      if (slot.children.length > 0) {
+        document.getElementById('bench-area').appendChild(slot.children[0]);
+      }
+      slot.appendChild(selectedStudent);
+      selectedStudent.classList.remove('selected');
+      selectedStudent = null;
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
