@@ -317,8 +317,38 @@
 🌲 環境教育704外掃區
 </div>
 
-<div id="outer-jobs" class="outer-map-layout"></div>
+<div id="outer-jobs" class="campus-map"></div>
+/* ===== 校園地圖 ===== */
 
+.campus-map{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.familymart-block{
+  grid-column:1 / span 2;
+  background:#4caf50;
+  color:white;
+  text-align:center;
+  padding:20px;
+  border-radius:16px;
+  font-size:24px;
+  font-weight:bold;
+}
+
+.sidewalk-block{
+  grid-column:1 / span 2;
+  background:#ffe082;
+  text-align:center;
+  padding:10px;
+  border-radius:12px;
+  font-weight:bold;
+}
+
+.bike-block{
+  background:#cfd8dc;
+}
 </div>
 
 <div class="section-box">
@@ -485,7 +515,17 @@ prefix==='outer'
 ?'outer-map'
 :'inner-map'
 }`;
+if(prefix==='outer'){
 
+  if(idx===0)
+      card.classList.add('familymart-block');
+
+  if(idx===1)
+      card.classList.add('sidewalk-block');
+
+  if(idx===4)
+      card.classList.add('bike-block');
+}
 if(prefix==='outer'){
 
   if(idx===0) card.classList.add('familymart');
