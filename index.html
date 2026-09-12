@@ -214,6 +214,57 @@
   border:2px dashed #999;
   border-radius:10px;
 }
+    /* ===== 地圖版外掃區 ===== */
+
+.outer-map-layout{
+  display:grid !important;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.familymart{
+  grid-column:1 / span 2;
+  background:#4caf50 !important;
+}
+
+.sidewalk{
+  grid-column:1 / span 2;
+  background:#ffe082 !important;
+}
+
+.bike{
+  background:#d7ccc8 !important;
+}
+
+/* ===== 教室俯視圖 ===== */
+
+#inner-jobs{
+  display:grid !important;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.blackboard{
+  grid-column:1 / span 4;
+  background:#424242 !important;
+  color:white;
+}
+
+.window{
+  background:#bbdefb !important;
+}
+
+.library{
+  background:#fff9c4 !important;
+}
+
+.balcony{
+  background:#c8e6c9 !important;
+}
+
+.sink{
+  background:#b2ebf2 !important;
+}
   </style>
 </head>
 <body>
@@ -302,19 +353,15 @@
       { id: "26", name: "26鍾牧辰", gender: "boy" }
     ];
 
-    const defaultOuterJobs = ["👑衛生股長",
-
-"🍄你家側",
-
-"🌳大家側",
-
-"🌼全家側",
-
-"🚲自行車棚",
-
-"🧹人行道機動區",
-
-"🌱環境巡守隊"];
+   const defaultOuterJobs = [
+"🏪 FamilyMart",
+"🚶 人行道",
+"🍄 你家側",
+"🌳 大家側",
+"🚲 腳踏車棚",
+"🧹 落葉清理區",
+"🌱 環境巡守隊"
+];
     const defaultInnerJobs = ["🩺保健股長",
 
 "🪟智窗",
@@ -403,12 +450,39 @@ jobs.forEach((job,idx)=>{
 const card =
 document.createElement('div');
 
-card.className=
+card.className =
 `map-card ${
 prefix==='outer'
 ?'outer-map'
 :'inner-map'
 }`;
+
+if(prefix==='outer'){
+
+  if(idx===0) card.classList.add('familymart');
+  if(idx===1) card.classList.add('sidewalk');
+  if(idx===4) card.classList.add('bike');
+
+}
+
+if(prefix==='inner'){
+
+  if(job.includes('黑板'))
+      card.classList.add('blackboard');
+
+  if(job.includes('智窗') ||
+     job.includes('慧窗'))
+      card.classList.add('window');
+
+  if(job.includes('讀書角'))
+      card.classList.add('library');
+
+  if(job.includes('陽台'))
+      card.classList.add('balcony');
+
+  if(job.includes('洗手台'))
+      card.classList.add('sink');
+}
 
 card.innerHTML=`
 <div
