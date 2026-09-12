@@ -235,6 +235,21 @@
   background:#d7ccc8 !important;
 }
 
+.familymart-block{
+  grid-column:1 / span 2;
+  background:#4caf50 !important;
+  color:white;
+}
+
+.sidewalk-block{
+  grid-column:1 / span 2;
+  background:#ffe082 !important;
+}
+
+.bike-block{
+  background:#cfd8dc !important;
+}
+
 /* ===== 教室俯視圖 ===== */
 
 #inner-jobs{
@@ -472,7 +487,7 @@ document.getElementById(containerId);
 
 container.innerHTML='';
 
-container.className='map-grid';
+container.className = (prefix==='outer') ? 'outer-map-layout' : 'map-grid';
 
 jobs.forEach((job,idx)=>{
 
