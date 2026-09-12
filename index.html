@@ -252,11 +252,54 @@
 
 /* ===== 教室俯視圖 ===== */
 
+
 #inner-jobs{
   display:grid !important;
   grid-template-columns:repeat(4,1fr);
-  gap:10px;
+  gap:8px;
 }
+
+.map-card{
+  min-height:90px !important;
+}
+
+.health-chief{
+  grid-column:2 / span 2;
+}
+
+.smart-window{
+  grid-column:1 / span 2;
+}
+
+.hui-window{
+  grid-column:3 / span 2;
+}
+
+.blackboard{
+  grid-column:1 / span 4 !important;
+  min-height:90px !important;
+}
+
+.library-area{
+  grid-column:3 / span 2;
+}
+
+.direction{
+  grid-column:2 / span 2;
+}
+
+.utensil{
+  grid-column:2 / span 2;
+}
+
+.sink{
+  grid-column:3 / span 2 !important;
+}
+
+.balcony{
+  grid-column:4 / span 1 !important;
+}
+
 
 .blackboard{
   grid-column:1 / span 4;
@@ -520,7 +563,10 @@ if(prefix==='outer'){
 
 if(prefix==='inner'){
 
-  if(job.includes('智窗'))
+  if(job.includes('保健股長'))
+      card.classList.add('health-chief');
+
+  else if(job.includes('智窗'))
       card.classList.add('smart-window');
 
   else if(job.includes('圖書角') || job.includes('讀書角'))
