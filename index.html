@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-TW"> 
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8"> 
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>文化國中704班日常環境教育地圖</title>
-  
+
   <!-- 引入 Firebase 雲端資料庫 SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
     :root {
-      --pikmin-bg: #f4f8f3;
       --border-color: #2d3748;
       --girl-pink: #fce4ec;
       --girl-pink-border: #f48fb1;
@@ -20,6 +19,10 @@
       --boy-blue-border: #81d4fa;
       --boy-text: #0277bd;
       --shadow: 2px 2px 0px var(--border-color);
+      --leaf-1: #8bc34a;
+      --leaf-2: #aed581;
+      --leaf-3: #dcedc8;
+      --flower: #fff59d;
     }
 
     * {
@@ -29,406 +32,221 @@
     }
 
     body {
-      background-color: var(--pikmin-bg);
-      background-image: radial-gradient(#aed581 12%, transparent 13%);
-      background-size: 16px 16px;
       margin: 0;
-      padding: 10px;
+      padding: 6px;
       color: #333;
-      max-width: 600px;
+      max-width: 480px;
       margin-left: auto;
       margin-right: auto;
+      background-color: #f4f8f0;
+      background-image:
+        radial-gradient(circle at 10% 20%, var(--leaf-2) 0 5px, transparent 6px),
+        radial-gradient(circle at 60% 10%, var(--leaf-3) 0 4px, transparent 5px),
+        radial-gradient(circle at 35% 55%, var(--flower) 0 3px, transparent 4px),
+        radial-gradient(circle at 85% 65%, var(--leaf-2) 0 5px, transparent 6px),
+        radial-gradient(circle at 15% 85%, var(--leaf-3) 0 4px, transparent 5px);
+      background-size: 90px 90px;
+      background-repeat: repeat;
     }
 
     header {
-      background: #8bc34a;
+      background: linear-gradient(180deg, var(--leaf-1), #7cb342);
       border: 2px solid var(--border-color);
       box-shadow: var(--shadow);
       border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      margin-bottom: 12px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     h1 {
-      margin: 0 0 8px 0;
-      font-size: 1.2rem;
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.3;
       color: #fff;
       text-shadow: 1px 1px 0px var(--border-color);
     }
 
     .auth-panel {
       display: flex;
-      flex-direction: column;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
     .status-text {
-      font-size: 0.8rem;
+      font-size: 0.68rem;
       color: #2e7d32;
-      background: rgba(255,255,255,0.9);
-      padding: 4px 10px;
+      background: rgba(255,255,255,0.92);
+      padding: 3px 8px;
       border-radius: 10px;
+      white-space: nowrap;
     }
 
     .btn {
       background: #ffca28;
       border: 2px solid var(--border-color);
       box-shadow: 2px 2px 0px var(--border-color);
-      padding: 6px 14px;
-      border-radius: 20px;
+      padding: 4px 10px;
+      border-radius: 16px;
       font-weight: bold;
-      font-size: 0.85rem;
+      font-size: 0.72rem;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     .section-box {
-      background: #ffffff;
+      background: rgba(255,255,255,0.94);
       border: 2px solid var(--border-color);
       box-shadow: var(--shadow);
       border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 12px;
+      padding: 8px;
+      margin-bottom: 8px;
     }
 
     .section-title {
       font-weight: bold;
-      font-size: 1rem;
-      margin-bottom: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
       border-bottom: 2px dashed #ddd;
-      padding-bottom: 6px;
+      padding-bottom: 4px;
     }
 
+    /* ===== 待分派學員區 ===== */
     .bench-area {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-  min-height: 140px;
-  max-height: 260px;
-  overflow-y: auto;
-
-  padding: 10px;
-  background: #fafafa;
-  border: 1px dashed #ccc;
-  border-radius: 8px;
-}
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+      gap: 4px;
+      min-height: 60px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 6px;
+      background: #fafafa;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+    }
 
     .student-card {
-      padding: 6px 10px;
-      border-radius: 12px;
-      font-size: 0.85rem;
+      padding: 4px 4px;
+      border-radius: 10px;
+      font-size: 0.72rem;
       font-weight: bold;
       border: 2px solid;
       cursor: pointer;
       user-select: none;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
+      text-align: center;
       box-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+      min-height: 30px;
     }
 
     .student-card.girl { background: var(--girl-pink); border-color: var(--girl-pink-border); color: var(--girl-text); }
     .student-card.boy { background: var(--boy-blue); border-color: var(--boy-blue-border); color: var(--boy-text); }
-    .student-card.selected { outline: 3px solid #ff9800; transform: scale(1.05); }
+    .student-card.selected { outline: 2px solid #ff9800; transform: scale(1.06); }
 
-    .job-list { display: flex; flex-direction: column; gap: 6px; }
-
-    .job-card {
-      background: #fff;
-      border: 1.5px solid var(--border-color);
-      border-radius: 8px;
-      padding: 6px 8px;
+    /* ===== 通用地圖卡片 ===== */
+    .map-card {
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 4px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 44px;
+      flex-direction: column;
+      gap: 3px;
+      min-height: 58px;
+      min-width: 0;
     }
 
-    .job-card.chief { background: #fff9c4; border-color: #fbc02d; font-weight: bold; }
+    .map-title {
+      font-weight: bold;
+      font-size: 0.66rem;
+      text-align: center;
+      outline: none;
+      overflow-wrap: break-word;
+      line-height: 1.15;
+    }
 
-    .job-title { font-size: 0.9rem; flex-grow: 1; outline: none; }
-    .job-title[contenteditable="true"] { border-bottom: 1px dashed #888; }
+    .map-title[contenteditable="true"] {
+      border-bottom: 1px dashed rgba(0,0,0,0.4);
+    }
 
-    .drop-slot {
-      min-width: 110px;
-      min-height: 34px;
-      border: 1.5px dashed #bbb;
-      border-radius: 6px;
+    .map-slot {
+      flex: 1;
+      min-height: 32px;
+      border: 1.5px dashed rgba(0,0,0,0.35);
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #fafafa;
+      background: rgba(255,255,255,0.55);
     }
 
-    .drop-slot:empty::before { content: "點擊放入"; font-size: 0.75rem; color: #aaa; }
-  .map-grid{
-  display:grid;
-  gap:10px;
-}
+    .map-slot .student-card {
+      width: 100%;
+      min-height: 26px;
+      font-size: 0.68rem;
+    }
 
-#outer-jobs{
-  display:grid;
-  grid-template-columns:
-  repeat(4,minmax(140px,1fr));
-  gap:12px;
-}
+    /* ===== 外掃區（自動排列）===== */
+    #outer-jobs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    #outer-jobs .map-card.wide { grid-column: 1 / -1; }
+    #outer-jobs .map-card { background: linear-gradient(#eef7e6, #dcedc8); }
 
-#inner-jobs{
-  display:grid !important;
-  grid-template-columns:repeat(6,1fr);
-  gap:10px;
-}
+    /* ===== 704 教室俯視圖：固定四區布局 ===== */
+    #inner-jobs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-areas:
+        "smartwin smartwin healthchief huiwin huiwin"
+        "bookshelf blackboard readingcorner recycle trash"
+        "row56 row4 row3 row2 row1"
+        "corridor utensils direction balcony sink";
+      gap: 6px;
+    }
 
-.map-card{
-  border:2px solid #2d3748;
-  border-radius:14px;
-  padding:8px;
-  min-height:120px;
-}
+    #inner-jobs .map-card { min-height: 52px; }
 
-.outer-map{
-  background:
-  linear-gradient(
-  #dcedc8,
-  #aed581
-  );
-}
+    .area-smartwin, .area-huiwin { background: #bbdefb; grid-area: initial; }
+    .area-healthchief { background: #fff9c4; border-color: #fbc02d; }
+    .area-bookshelf, .area-readingcorner { background: #fff3cd; }
+    .area-blackboard { background: #424242; color: #fff; }
+    .area-blackboard .map-title { color: #fff; }
+    .area-recycle { background: #c8e6c9; }
+    .area-trash { background: #d7ccc8; }
+    .area-row56, .area-row4, .area-row3, .area-row2, .area-row1 { background: #f1f8e9; }
+    .area-corridor, .area-direction { background: #e0f2f1; }
+    .area-utensils { background: #ffe0b2; }
+    .area-balcony { background: #c8e6c9; }
+    .area-sink { background: #b2ebf2; }
 
-.inner-map{
-  background:
-  linear-gradient(
-  #fff8e1,
-  #fffde7
-  );
-}
-
-.map-title{
-  font-weight:bold;
-  margin-bottom:6px;
-}
-
-.map-slot{
-  min-height:50px;
-  border:2px dashed #999;
-  border-radius:10px;
-}
-    /* ===== 地圖版外掃區 ===== */
-
-.outer-map-layout{
-  display:grid !important;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.familymart{
-  grid-column:1 / span 2;
-  background:#4caf50 !important;
-}
-
-.sidewalk{
-  grid-column:1 / span 2;
-  background:#ffe082 !important;
-}
-
-.bike{
-  background:#d7ccc8 !important;
-}
-
-.familymart-block{
-  grid-column:1 / span 2;
-  background:#4caf50 !important;
-  color:white;
-}
-
-.sidewalk-block{
-  grid-column:1 / span 2;
-  background:#ffe082 !important;
-}
-
-.bike-block{
-  background:#cfd8dc !important;
-}
-
-/* ===== 教室俯視圖 ===== */
-
-
-#inner-jobs{
-  display:grid !important;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-}
-
-.map-card{
-  min-height:90px !important;
-}
-
-.health-chief{
-  grid-column:2 / span 2;
-}
-
-.smart-window{
-  grid-column:1 / span 2;
-}
-
-.hui-window{
-  grid-column:3 / span 2;
-}
-
-.blackboard{
-  grid-column:1 / span 4 !important;
-  min-height:90px !important;
-}
-
-.library-area{
-  grid-column:3 / span 2;
-}
-
-.direction{
-  grid-column:2 / span 2;
-}
-
-.utensil{
-  grid-column:2 / span 2;
-}
-
-.sink{
-  grid-column:3 / span 2 !important;
-}
-
-.balcony{
-  grid-column:4 / span 1 !important;
-}
-
-
-.blackboard{
-  grid-column:1 / span 4;
-  background:#424242 !important;
-  color:white;
-}
-
-.window{
-  background:#bbdefb !important;
-}
-
-.library{
-  background:#fff9c4 !important;
-}
-
-.balcony{
-  background:#c8e6c9 !important;
-}
-
-.sink{
-  background:#b2ebf2 !important;
-}
-.smart-window{grid-column:1 / span 2;}
-.library-area{grid-column:5 / span 2;}
-
-.blackboard{
-  grid-column:1 / span 6;
-}
-
-.row-area{
-  grid-column:1 / span 6;
-}
-
-.hui-window{
-  grid-column:1 / span 2;
-}
-
-.front-door{
-  grid-column:1 / span 2;
-}
-
-.back-door{
-  grid-column:3 / span 2;
-}
-
-.balcony{
-  grid-column:5;
-}
-
-.sink{
-  grid-column:6;
-}
-.direction{
-  grid-column:1 / span 3;
-}
-
-.utensil{
-  grid-column:4 / span 3;
-}
-
-.balcony{
-  grid-column:1 / span 3;
-}
-
-.sink{
-  grid-column:4 / span 3;
-}
-}
-  
-/* 704內掃四區配置 */
-#inner-jobs{
-  display:grid !important;
-  grid-template-columns:repeat(5,1fr) !important;
-  gap:8px;
-}
-.health-chief{grid-column:3;}
-.smart-window{grid-column:1;}
-.hui-window{grid-column:5;}
-.library{grid-column:1;}
-.blackboard{grid-column:2 / span 2 !important;}
-.reading-corner{grid-column:4;}
-.recycle{grid-column:5;}
-.row56{grid-column:1;}
-.row4{grid-column:2;}
-.row3{grid-column:3;}
-.row2{grid-column:4;}
-.row1{grid-column:5;}
-.corridor{grid-column:1;}
-.utensil{grid-column:2;}
-.direction{grid-column:3;}
-.balcony{grid-column:4;}
-.sink{grid-column:5;}
-
-
-/* ===== 704內掃四列緊湊版 ===== */
-#inner-jobs{
-  display:grid !important;
-  grid-template-columns:repeat(5,1fr) !important;
-  gap:10px !important;
-  align-items:start;
-}
-
-.health-chief{grid-column:3;}
-.smart-window{grid-column:1;}
-.hui-window{grid-column:5;}
-
-.library{grid-column:1;}
-.blackboard{grid-column:2 / span 2 !important;}
-.reading-corner{grid-column:4;}
-.recycle{grid-column:5;}
-.trash{grid-column:5;}
-
-.row56{grid-column:1;}
-.row4{grid-column:2;}
-.row3{grid-column:3;}
-.row2{grid-column:4;}
-.row1{grid-column:5;}
-
-.corridor{grid-column:1;}
-.utensil{grid-column:2;}
-.direction{grid-column:3;}
-.balcony{grid-column:4;}
-.sink{grid-column:5;}
-
-.map-card{
-  min-height:90px !important;
-}
-
-</style>
+    #area-smartwin      { grid-area: smartwin; }
+    #area-healthchief    { grid-area: healthchief; }
+    #area-huiwin         { grid-area: huiwin; }
+    #area-bookshelf      { grid-area: bookshelf; }
+    #area-blackboard     { grid-area: blackboard; }
+    #area-readingcorner  { grid-area: readingcorner; }
+    #area-recycle        { grid-area: recycle; }
+    #area-trash          { grid-area: trash; }
+    #area-row56          { grid-area: row56; }
+    #area-row4           { grid-area: row4; }
+    #area-row3           { grid-area: row3; }
+    #area-row2           { grid-area: row2; }
+    #area-row1           { grid-area: row1; }
+    #area-corridor       { grid-area: corridor; }
+    #area-utensils       { grid-area: utensils; }
+    #area-direction      { grid-area: direction; }
+    #area-balcony        { grid-area: balcony; }
+    #area-sink           { grid-area: sink; }
+  </style>
 </head>
 <body>
 
@@ -446,27 +264,17 @@
   </div>
 
   <div class="section-box">
+    <div class="section-title">🌲 環境教育704外掃區</div>
+    <div id="outer-jobs"></div>
+  </div>
 
-<div class="section-title">
-🌲 環境教育704外掃區
-</div>
-
-<div id="outer-jobs" class="campus-map"></div>
-
-</div>
-
-<div class="section-box">
-
-<div class="section-title">
-🏫 704教室俯視圖
-</div>
-
-<div id="inner-jobs"></div>
-
-</div>
+  <div class="section-box">
+    <div class="section-title">🏫 704 教室俯視圖（固定四區布局）</div>
+    <div id="inner-jobs"></div>
+  </div>
 
   <script>
-   const firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyBJ7DK4Au39FLPXw71gy4qBif0VanXVuOE",
       authDomain: "clean-e6b15.firebaseapp.com",
       databaseURL: "https://clean-e6b15-default-rtdb.firebaseio.com",
@@ -481,7 +289,7 @@
     try {
       firebase.initializeApp(firebaseConfig);
       dbRef = firebase.database().ref('704_env_map');
-    } catch(e) {
+    } catch (e) {
       console.log("Firebase 尚未正確設定連線");
     }
 
@@ -516,40 +324,44 @@
       { id: "26", name: "26鍾牧辰", gender: "boy" }
     ];
 
-   const defaultOuterJobs = [
-"🏪 FamilyMart",
-"🚶 人行道",
-"🍄 你家側",
-"🌳 大家側",
-"🚲 腳踏車棚",
-"🧹 落葉清理區",
-"🌱 環境巡守隊"
-];
+    // 外掃區職務（wide: 佔滿整列）
+    const defaultOuterJobs = [
+      { title: "🏪 FamilyMart", wide: true },
+      { title: "🚶 人行道", wide: true },
+      { title: "🍄 你家側" },
+      { title: "🌳 大家側" },
+      { title: "🚲 腳踏車棚" },
+      { title: "🧹 落葉清理區" },
+      { title: "🌱 環境巡守隊" }
+    ];
+
+    // 教室內掃職務：固定四區（area 對應 CSS grid-area，重新命名不會受標題文字影響）
     const defaultInnerJobs = [
-"保健股長",
-"智窗",
-"慧窗",
-"黑板",
-"書櫃",
-"陽台",
-"走廊",
-"垃圾",
-"回收",
-"讀書角",
-"第一排",
-"第二排",
-"第三排",
-"第四排",
-"第五六排",
-"前後左右",
-"公用餐具",
-"洗手台"
-];
+      { title: "智窗", area: "smartwin" },
+      { title: "保健股長", area: "healthchief" },
+      { title: "慧窗", area: "huiwin" },
+      { title: "書櫃", area: "bookshelf" },
+      { title: "黑板", area: "blackboard" },
+      { title: "讀書角", area: "readingcorner" },
+      { title: "回收", area: "recycle" },
+      { title: "垃圾", area: "trash" },
+      { title: "第五六排", area: "row56" },
+      { title: "第四排", area: "row4" },
+      { title: "第三排", area: "row3" },
+      { title: "第二排", area: "row2" },
+      { title: "第一排", area: "row1" },
+      { title: "走廊", area: "corridor" },
+      { title: "公用餐具", area: "utensils" },
+      { title: "前後左右", area: "direction" },
+      { title: "陽台", area: "balcony" },
+      { title: "洗手台", area: "sink" }
+    ];
+
     // 頁面初始化
     function init() {
       renderBaseStructure();
       if (dbRef) {
-        // 監聽雲端資料庫變更 (全體即時同步)
+        // 監聽雲端資料庫變更（全體即時同步）
         dbRef.on('value', (snapshot) => {
           const data = snapshot.val();
           if (data) {
@@ -563,9 +375,9 @@
     }
 
     function renderBaseStructure() {
-      renderJobList('outer-jobs', defaultOuterJobs, 'outer');
-      renderJobList('inner-jobs', defaultInnerJobs, 'inner');
-      
+      renderOuterJobs();
+      renderInnerJobs();
+
       const bench = document.getElementById('bench-area');
       bench.innerHTML = '';
       defaultStudents.forEach(s => {
@@ -578,107 +390,35 @@
       });
     }
 
-    function renderJobList(
-containerId,
-jobs,
-prefix
-){
+    function makeMapCard(idx, prefix, title, extraClass) {
+      const card = document.createElement('div');
+      card.className = `map-card ${extraClass || ''}`;
+      card.innerHTML = `
+        <div class="map-title" id="title-${prefix}-${idx}" contenteditable="${isEditable}" onblur="saveToCloud()">${title}</div>
+        <div class="map-slot" id="slot-${prefix}-${idx}" onclick="handleSlotClick(this)"></div>
+      `;
+      return card;
+    }
 
-const container =
-document.getElementById(containerId);
+    function renderOuterJobs() {
+      const container = document.getElementById('outer-jobs');
+      container.innerHTML = '';
+      defaultOuterJobs.forEach((job, idx) => {
+        const card = makeMapCard(idx, 'outer', job.title, job.wide ? 'wide' : '');
+        container.appendChild(card);
+      });
+    }
 
-container.innerHTML='';
+    function renderInnerJobs() {
+      const container = document.getElementById('inner-jobs');
+      container.innerHTML = '';
+      defaultInnerJobs.forEach((job, idx) => {
+        const card = makeMapCard(idx, 'inner', job.title, `area-${job.area}`);
+        card.id = `area-${job.area}`;
+        container.appendChild(card);
+      });
+    }
 
-container.className = (prefix==='outer') ? 'outer-map-layout' : 'map-grid';
-
-jobs.forEach((job,idx)=>{
-
-const card =
-document.createElement('div');
-
-card.className =
-`map-card ${
-prefix==='outer'
-?'outer-map'
-:'inner-map'
-}`;
-if(prefix==='outer'){
-
-  if(idx===0)
-      card.classList.add('familymart-block');
-
-  if(idx===1)
-      card.classList.add('sidewalk-block');
-
-  if(idx===4)
-      card.classList.add('bike-block');
-}
-if(prefix==='outer'){
-
-  if(idx===0) card.classList.add('familymart');
-  if(idx===1) card.classList.add('sidewalk');
-  if(idx===4) card.classList.add('bike');
-
-}
-
-if(prefix==='inner'){
-
-  if(job.includes('保健股長'))
-      card.classList.add('health-chief');
-
-  else if(job.includes('智窗'))
-      card.classList.add('smart-window');
-
-  else if(job.includes('圖書角') || job.includes('讀書角'))
-      card.classList.add('library-area');
-
-  else if(job.includes('黑板'))
-      card.classList.add('blackboard');
-
-  else if(job.includes('慧窗'))
-      card.classList.add('hui-window');
-
-  else if(job.includes('前門'))
-      card.classList.add('front-door');
-
-  else if(job.includes('後門'))
-      card.classList.add('back-door');
-
-  else if(job.includes('陽台'))
-      card.classList.add('balcony');
-
-  else if(job.includes('洗手台'))
-      card.classList.add('sink');
-  else if(job.includes('前後左右'))
-    card.classList.add('direction');
-
-else if(job.includes('公用餐具'))
-    card.classList.add('utensil');
-}
-
-card.innerHTML=`
-<div
-class="map-title"
-id="title-${prefix}-${idx}"
-contenteditable="${isEditable}"
-onblur="saveToCloud()"
->
-${job}
-</div>
-
-<div
-class="map-slot"
-id="slot-${prefix}-${idx}"
-onclick="handleSlotClick(this)"
->
-</div>
-`;
-
-container.appendChild(card);
-
-});
-
-} 
     // 將資料儲存至 Firebase 雲端
     function saveToCloud() {
       if (!dbRef || !isEditable) return;
@@ -746,8 +486,7 @@ container.appendChild(card);
         if (pwd === "clean183") {
           isEditable = true;
           document.getElementById('lock-status').innerText = "🔓 編輯模式已解鎖（變更將實時同步至所有人）";
-          document.querySelectorAll('.map-title')
-  .forEach(el => el.setAttribute('contenteditable', 'true'));
+          document.querySelectorAll('.map-title').forEach(el => el.setAttribute('contenteditable', 'true'));
           alert("驗證成功！點擊學員與格子即可進行排班作業。");
         } else if (pwd !== null) {
           alert("密碼是班導的身高！");
@@ -755,8 +494,7 @@ container.appendChild(card);
       } else {
         isEditable = false;
         document.getElementById('lock-status').innerText = "🔒 瀏覽模式（實時同步中）";
-        document.querySelectorAll('.map-title')
-  .forEach(el => el.setAttribute('contenteditable', 'false'));
+        document.querySelectorAll('.map-title').forEach(el => el.setAttribute('contenteditable', 'false'));
         clearSelection();
       }
     }
