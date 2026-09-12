@@ -26,7 +26,7 @@
     }
 
     * {
-      box-sizing: border-box;
+      box-sizing: border-box; 
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
@@ -225,8 +225,8 @@
     .zone-b .map-card[data-title="黑板"] .map-title { color: #fff; }
     .zone-a .map-card[data-title="保健股長"] { background: #fff9c4; border-color: #fbc02d; }
     .zone-a .map-card[data-title="智窗"], .zone-a .map-card[data-title="慧窗"] { background: #bbdefb; }
-    .zone-b .map-card[data-title="回收"] { background: #c8e6c9; }
-    .zone-b .map-card[data-title="垃圾"] { background: #d7ccc8; }
+    .zone-b .map-card[data-title="給呂賽鴿"] { background: #c8e6c9; }
+    .zone-b .map-card[data-title="給愛麗絲"] { background: #d7ccc8; }
     .zone-d .map-card[data-title="陽台"] { background: #c8e6c9; }
     .zone-d .map-card[data-title="洗手台"] { background: #b2ebf2; }
     .zone-d .map-card[data-title="公用餐具"] { background: #ffe0b2; }
@@ -253,7 +253,7 @@
   </div>
 
   <div class="section-box">
-    <div class="section-title">🏫 704 教室俯視圖（固定四區布局）</div>
+    <div class="section-title">🏫 教室內掃區 </div>
     <div id="inner-jobs"></div>
   </div>
 
@@ -322,7 +322,7 @@
     // 教室內掃職務：固定四區 A/B/C/D，各區由左至右排列
     const innerZones = [
       { key: "a", label: "A區", jobs: ["智窗", "保健股長", "慧窗"] },
-      { key: "b", label: "B區", jobs: ["書櫃", "黑板", "讀書角", "回收", "垃圾"] },
+      { key: "b", label: "B區", jobs: ["書櫃", "黑板", "讀書角", "給呂賽鴿", "給愛麗絲"] },
       { key: "c", label: "C區", jobs: ["第五六排", "第四排", "第三排", "第二排", "第一排"] },
       { key: "d", label: "D區", jobs: ["走廊", "公用餐具", "前後左右", "陽台", "洗手台"] }
     ];
