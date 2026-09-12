@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-TW"> 
+<head>
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>文化國中704班日常環境教育地圖</title>
+  
+  <!-- 引入 Firebase 雲端資料庫 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --pikmin-bg: #f4f8f3;
+      --border-color: #2d3748;
+      --girl-pink: #fce4ec;
+      --girl-pink-border: #f48fb1;
+      --girl-text: #ad1457;
+      --boy-blue: #e1f5fe;
+      --boy-blue-border: #81d4fa;
+      --boy-text: #0277bd;
+      --shadow: 2px 2px 0px var(--border-color);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--pikmin-bg);
+      background-image: radial-gradient(#aed581 12%, transparent 13%);
+      background-size: 16px 16px;
+      margin: 0;
+      padding: 10px;
+      color: #333;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    header {
+      background: #8bc34a;
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 1.2rem;
+      color: #fff;
+      text-shadow: 1px 1px 0px var(--border-color);
+    }
+
+    .auth-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-text {
+      font-size: 0.8rem;
+      color: #2e7d32;
+      background: rgba(255,255,255,0.9);
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    .btn {
+      background: #ffca28;
+      border: 2px solid var(--border-color);
+      box-shadow: 2px 2px 0px var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .section-box {
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      border-bottom: 2px dashed #ddd;
+      padding-bottom: 6px;
+    }
+
+    .bench-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 50px;
+      padding: 6px;
+      background: #fafafa;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+    }
+
+    .student-card {
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border: 2px solid;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+    }
+
+    .student-card.girl { background: var(--girl-pink); border-color: var(--girl-pink-border); color: var(--girl-text); }
+    .student-card.boy { background: var(--boy-blue); border-color: var(--boy-blue-border); color: var(--boy-text); }
+    .student-card.selected { outline: 3px solid #ff9800; transform: scale(1.05); }
+
+    .job-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .job-card {
+      background: #fff;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .job-card.chief { background: #fff9c4; border-color: #fbc02d; font-weight: bold; }
+
+    .job-title { font-size: 0.9rem; flex-grow: 1; outline: none; }
+    .job-title[contenteditable="true"] { border-bottom: 1px dashed #888; }
+
+    .drop-slot {
+      min-width: 110px;
+      min-height: 34px;
+      border: 1.5px dashed #bbb;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+    }
+
+    .drop-slot:empty::before { content: "點擊放入"; font-size: 0.75rem; color: #aaa; }
+  .map-grid{
+  display:grid;
+  gap:10px;
+}
+
+#outer-jobs{
+  display:grid;
+  grid-template-columns:
+  repeat(4,minmax(140px,1fr));
+  gap:12px;
+}
+
+#inner-jobs{
+  display:grid;
+  grid-template-columns:
+  repeat(3,minmax(180px,1fr));
+  gap:12px;
+}
+
+.map-card{
+  border:2px solid #2d3748;
+  border-radius:14px;
+  padding:8px;
+  min-height:120px;
+}
+
+.outer-map{
+  background:
+  linear-gradient(
+  #dcedc8,
+  #aed581
+  );
+}
+
+.inner-map{
+  background:
+  linear-gradient(
+  #fff8e1,
+  #fffde7
+  );
+}
+
+.map-title{
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+.map-slot{
+  min-height:50px;
+  border:2px dashed #999;
+  border-radius:10px;
+}
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌱 文化國中704班<br>日常環境教育地圖 🌱</h1>
+    <div class="auth-panel">
+      <span class="status-text" id="lock-status">🔒 瀏覽模式（實時同步中）</span>
+      <button class="btn" onclick="toggleEdit()">輸入編輯密碼</button>
+    </div>
+  </header>
+
+  <div class="section-box">
+    <div class="section-title">🪑 待分派學員區</div>
+    <div class="bench-area" id="bench-area" onclick="returnToBench()"></div>
+  </div>
+
+  <div class="section-box">
+
+<div class="section-title">
+🌲 Pikmin森林外掃區
+</div>
+
+<div id="outer-jobs"></div>
+
+</div>
+
+<div class="section-box">
+
+<div class="section-title">
+🏫 704教室俯視圖
+</div>
+
+<div id="inner-jobs"></div>
+
+</div>
+
+  <script>
+   const firebaseConfig = {
+      apiKey: "AIzaSyBJ7DK4Au39FLPXw71gy4qBif0VanXVuOE",
+      authDomain: "clean-e6b15.firebaseapp.com",
+      databaseURL: "https://clean-e6b15-default-rtdb.firebaseio.com",
+      projectId: "clean-e6b15",
+      storageBucket: "clean-e6b15.firebasestorage.app",
+      messagingSenderId: "47794298923",
+      appId: "1:47794298923:web:5f89a558bb93b12ab60abe"
+    };
+
+    // 初始化 Firebase
+    let dbRef = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      dbRef = firebase.database().ref('704_env_map');
+    } catch(e) {
+      console.log("Firebase 尚未正確設定連線");
+    }
+
+    let isEditable = false;
+    let selectedStudentEl = null;
+
+    const defaultStudents = [
+      { id: "01", name: "01李岱臻", gender: "girl" },
+      { id: "02", name: "02林永喜", gender: "girl" },
+      { id: "03", name: "03林品妍", gender: "girl" },
+      { id: "04", name: "04林品璇", gender: "girl" },
+      { id: "05", name: "05林妤晴", gender: "girl" },
+      { id: "06", name: "06邱子芯", gender: "girl" },
+      { id: "07", name: "07張采穎", gender: "girl" },
+      { id: "08", name: "08張祐瑄", gender: "girl" },
+      { id: "09", name: "09陳依槿", gender: "girl" },
+      { id: "10", name: "10劉憶萱", gender: "girl" },
+      { id: "11", name: "11賴沛金", gender: "girl" },
+      { id: "12", name: "12賴苡安", gender: "girl" },
+      { id: "13", name: "13謝苡柔", gender: "girl" },
+      { id: "15", name: "15王辰祐", gender: "boy" },
+      { id: "16", name: "16林弘鎰", gender: "boy" },
+      { id: "17", name: "17林裕鈁", gender: "boy" },
+      { id: "18", name: "18邱渤洲", gender: "boy" },
+      { id: "19", name: "19紀杰", gender: "boy" },
+      { id: "20", name: "20張承煜", gender: "boy" },
+      { id: "21", name: "21陳佑睿", gender: "boy" },
+      { id: "22", name: "22陳利昌", gender: "boy" },
+      { id: "23", name: "23游尚睿", gender: "boy" },
+      { id: "24", name: "24楊佳恩", gender: "boy" },
+      { id: "25", name: "25賴誠恩", gender: "boy" },
+      { id: "26", name: "26鍾牧辰", gender: "boy" }
+    ];
+
+    const defaultOuterJobs = ["👑衛生股長",
+
+"🍄你家側",
+
+"🌳大家側",
+
+"🌼全家側",
+
+"🚲自行車棚",
+
+"🧹人行道機動區",
+
+"🌱環境巡守隊"];
+    const defaultInnerJobs = ["🩺保健股長",
+
+"🪟智窗",
+
+"🪟慧窗",
+
+"🖍黑板",
+
+"🪑桌櫃",
+
+"☀️陽台",
+
+"🏫走廊",
+
+"🗑倒垃圾",
+
+"♻️資源回收",
+
+"📖讀書角",
+
+"📚第一排",
+
+"📚第二排",
+
+"📚第三排",
+
+"📚第四排",
+
+"📚第五排",
+
+"📚第六排",
+
+"🚰洗手台",
+
+"🍱公用餐具"
+];
+
+    // 頁面初始化
+    function init() {
+      renderBaseStructure();
+      if (dbRef) {
+        // 監聽雲端資料庫變更 (全體即時同步)
+        dbRef.on('value', (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            applyCloudData(data);
+          } else {
+            // 資料庫若為空，寫入預設值
+            saveToCloud();
+          }
+        });
+      }
+    }
+
+    function renderBaseStructure() {
+      renderJobList('outer-jobs', defaultOuterJobs, 'outer');
+      renderJobList('inner-jobs', defaultInnerJobs, 'inner');
+      
+      const bench = document.getElementById('bench-area');
+      bench.innerHTML = '';
+      defaultStudents.forEach(s => {
+        const card = document.createElement('div');
+        card.className = `student-card ${s.gender}`;
+        card.id = `student-${s.id}`;
+        card.innerText = s.name;
+        card.onclick = (e) => { e.stopPropagation(); handleStudentClick(card); };
+        bench.appendChild(card);
+      });
+    }
+
+    function renderJobList(
+containerId,
+jobs,
+prefix
+){
+
+const container =
+document.getElementById(containerId);
+
+container.innerHTML='';
+
+container.className='map-grid';
+
+jobs.forEach((job,idx)=>{
+
+const card =
+document.createElement('div');
+
+card.className=
+`map-card ${
+prefix==='outer'
+?'outer-map'
+:'inner-map'
+}`;
+
+card.innerHTML=`
+<div
+class="map-title"
+id="title-${prefix}-${idx}"
+contenteditable="${isEditable}"
+onblur="saveToCloud()"
+>
+${job}
+</div>
+
+<div
+class="map-slot"
+id="slot-${prefix}-${idx}"
+onclick="handleSlotClick(this)"
+>
+</div>
+`;
+
+container.appendChild(card);
+
+});
+
+} 
+    // 將資料儲存至 Firebase 雲端
+    function saveToCloud() {
+      if (!dbRef || !isEditable) return;
+
+      const state = {
+        outerTitles: [],
+        innerTitles: [],
+        assignments: {} // slotId: studentId
+      };
+
+      defaultOuterJobs.forEach((_, idx) => {
+        state.outerTitles.push(document.getElementById(`title-outer-${idx}`).innerText);
+        const slot = document.getElementById(`slot-outer-${idx}`);
+        if (slot.children.length > 0) state.assignments[`slot-outer-${idx}`] = slot.children[0].id;
+      });
+
+      defaultInnerJobs.forEach((_, idx) => {
+        state.innerTitles.push(document.getElementById(`title-inner-${idx}`).innerText);
+        const slot = document.getElementById(`slot-inner-${idx}`);
+        if (slot.children.length > 0) state.assignments[`slot-inner-${idx}`] = slot.children[0].id;
+      });
+
+      dbRef.set(state);
+    }
+
+    // 讀取並渲染雲端最新資料
+    function applyCloudData(data) {
+      // 1. 更新職稱
+      if (data.outerTitles) {
+        data.outerTitles.forEach((title, idx) => {
+          const el = document.getElementById(`title-outer-${idx}`);
+          if (el && el !== document.activeElement) el.innerText = title;
+        });
+      }
+      if (data.innerTitles) {
+        data.innerTitles.forEach((title, idx) => {
+          const el = document.getElementById(`title-inner-${idx}`);
+          if (el && el !== document.activeElement) el.innerText = title;
+        });
+      }
+
+      // 2. 重置所有學員回板凳區
+      const bench = document.getElementById('bench-area');
+      defaultStudents.forEach(s => {
+        const studentEl = document.getElementById(`student-${s.id}`);
+        if (studentEl) bench.appendChild(studentEl);
+      });
+
+      // 3. 根據雲端分派學員至對應位置
+      if (data.assignments) {
+        Object.keys(data.assignments).forEach(slotId => {
+          const slot = document.getElementById(slotId);
+          const studentEl = document.getElementById(data.assignments[slotId]);
+          if (slot && studentEl) {
+            slot.appendChild(studentEl);
+          }
+        });
+      }
+    }
+
+    // 解鎖密碼機制
+    function toggleEdit() {
+      if (!isEditable) {
+        const pwd = prompt("請輸入編輯密碼：");
+        if (pwd === "clean183") {
+          isEditable = true;
+          document.getElementById('lock-status').innerText = "🔓 編輯模式已解鎖（變更將實時同步至所有人）";
+          document.querySelectorAll('.map-title')
+  .forEach(el => el.setAttribute('contenteditable', 'true'));
+          alert("驗證成功！點擊學員與格子即可進行排班作業。");
+        } else if (pwd !== null) {
+          alert("密碼是班導的身高！");
+        }
+      } else {
+        isEditable = false;
+        document.getElementById('lock-status').innerText = "🔒 瀏覽模式（實時同步中）";
+        document.querySelectorAll('.map-title')
+  .forEach(el => el.setAttribute('contenteditable', 'false'));
+        clearSelection();
+      }
+    }
+
+    function handleStudentClick(cardEl) {
+      if (!isEditable) return;
+      if (selectedStudentEl === cardEl) { clearSelection(); return; }
+      clearSelection();
+      selectedStudentEl = cardEl;
+      cardEl.classList.add('selected');
+    }
+
+    function handleSlotClick(slotEl) {
+      if (!isEditable) return;
+      if (selectedStudentEl) {
+        if (slotEl.children.length > 0) document.getElementById('bench-area').appendChild(slotEl.children[0]);
+        slotEl.appendChild(selectedStudentEl);
+        clearSelection();
+        saveToCloud();
+      } else if (slotEl.children.length > 0) {
+        document.getElementById('bench-area').appendChild(slotEl.children[0]);
+        saveToCloud();
+      }
+    }
+
+    function returnToBench() {
+      if (!isEditable || !selectedStudentEl) return;
+      document.getElementById('bench-area').appendChild(selectedStudentEl);
+      clearSelection();
+      saveToCloud();
+    }
+
+    function clearSelection() {
+      if (selectedStudentEl) {
+        selectedStudentEl.classList.remove('selected');
+        selectedStudentEl = null;
+      }
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
