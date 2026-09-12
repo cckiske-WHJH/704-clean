@@ -175,10 +175,9 @@
 }
 
 #inner-jobs{
-  display:grid;
-  grid-template-columns:
-  repeat(3,minmax(180px,1fr));
-  gap:12px;
+  display:grid !important;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
 }
 
 .map-card{
@@ -264,6 +263,36 @@
 
 .sink{
   background:#b2ebf2 !important;
+}
+.smart-window{grid-column:1 / span 2;}
+.library-area{grid-column:5 / span 2;}
+
+.blackboard{
+  grid-column:1 / span 6;
+}
+
+.row-area{
+  grid-column:1 / span 6;
+}
+
+.hui-window{
+  grid-column:1 / span 2;
+}
+
+.front-door{
+  grid-column:1 / span 2;
+}
+
+.back-door{
+  grid-column:3 / span 2;
+}
+
+.balcony{
+  grid-column:5;
+}
+
+.sink{
+  grid-column:6;
 }
   </style>
 </head>
@@ -467,20 +496,30 @@ if(prefix==='outer'){
 
 if(prefix==='inner'){
 
-  if(job.includes('黑板'))
+  if(job.includes('智窗'))
+      card.classList.add('smart-window');
+
+  else if(job.includes('讀書角'))
+      card.classList.add('library-area');
+
+  else if(job.includes('黑板'))
       card.classList.add('blackboard');
 
-  if(job.includes('智窗') ||
-     job.includes('慧窗'))
-      card.classList.add('window');
+  else if(job.includes('第一排') ||
+          job.includes('第二排') ||
+          job.includes('第三排') ||
+          job.includes('第四排') ||
+          job.includes('第五排') ||
+          job.includes('第六排'))
+      card.classList.add('row-area');
 
-  if(job.includes('讀書角'))
-      card.classList.add('library');
+  else if(job.includes('慧窗'))
+      card.classList.add('hui-window');
 
-  if(job.includes('陽台'))
+  else if(job.includes('陽台'))
       card.classList.add('balcony');
 
-  if(job.includes('洗手台'))
+  else if(job.includes('洗手台'))
       card.classList.add('sink');
 }
 
