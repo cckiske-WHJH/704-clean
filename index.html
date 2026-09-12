@@ -158,8 +158,9 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
-      min-height: 58px;
+      min-height: 56px;
       min-width: 0;
+      background: #f1f8e9;
     }
 
     .map-title {
@@ -177,7 +178,7 @@
 
     .map-slot {
       flex: 1;
-      min-height: 32px;
+      min-height: 30px;
       border: 1.5px dashed rgba(0,0,0,0.35);
       border-radius: 8px;
       display: flex;
@@ -192,60 +193,43 @@
       font-size: 0.68rem;
     }
 
-    /* ===== 外掃區（自動排列）===== */
-    #outer-jobs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-    }
-    #outer-jobs .map-card.wide { grid-column: 1 / -1; }
+    /* ===== 外掃區：衛生股長一列 + 其餘6員分2列(每列3格) ===== */
+    #outer-jobs { display: flex; flex-direction: column; gap: 6px; }
+    .outer-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .outer-row.chief-row { grid-template-columns: 1fr; }
     #outer-jobs .map-card { background: linear-gradient(#eef7e6, #dcedc8); }
+    #outer-jobs .map-card.chief { background: #fff9c4; border-color: #fbc02d; }
 
-    /* ===== 704 教室俯視圖：固定四區布局 ===== */
-    #inner-jobs {
+    /* ===== 704 教室俯視圖：固定四區（A/B/C/D） ===== */
+    .zone { margin-bottom: 6px; }
+    .zone:last-child { margin-bottom: 0; }
+    .zone-label {
+      display: inline-block;
+      font-weight: bold;
+      font-size: 0.7rem;
+      background: var(--leaf-1);
+      color: #fff;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1px 8px;
+      margin-bottom: 4px;
+    }
+    .zone-row {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-areas:
-        "smartwin smartwin healthchief huiwin huiwin"
-        "bookshelf blackboard readingcorner recycle trash"
-        "row56 row4 row3 row2 row1"
-        "corridor utensils direction balcony sink";
       gap: 6px;
     }
+    .zone-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .zone-row.cols-5 { grid-template-columns: repeat(5, 1fr); }
 
-    #inner-jobs .map-card { min-height: 52px; }
-
-    .area-smartwin, .area-huiwin { background: #bbdefb; grid-area: initial; }
-    .area-healthchief { background: #fff9c4; border-color: #fbc02d; }
-    .area-bookshelf, .area-readingcorner { background: #fff3cd; }
-    .area-blackboard { background: #424242; color: #fff; }
-    .area-blackboard .map-title { color: #fff; }
-    .area-recycle { background: #c8e6c9; }
-    .area-trash { background: #d7ccc8; }
-    .area-row56, .area-row4, .area-row3, .area-row2, .area-row1 { background: #f1f8e9; }
-    .area-corridor, .area-direction { background: #e0f2f1; }
-    .area-utensils { background: #ffe0b2; }
-    .area-balcony { background: #c8e6c9; }
-    .area-sink { background: #b2ebf2; }
-
-    #area-smartwin      { grid-area: smartwin; }
-    #area-healthchief    { grid-area: healthchief; }
-    #area-huiwin         { grid-area: huiwin; }
-    #area-bookshelf      { grid-area: bookshelf; }
-    #area-blackboard     { grid-area: blackboard; }
-    #area-readingcorner  { grid-area: readingcorner; }
-    #area-recycle        { grid-area: recycle; }
-    #area-trash          { grid-area: trash; }
-    #area-row56          { grid-area: row56; }
-    #area-row4           { grid-area: row4; }
-    #area-row3           { grid-area: row3; }
-    #area-row2           { grid-area: row2; }
-    #area-row1           { grid-area: row1; }
-    #area-corridor       { grid-area: corridor; }
-    #area-utensils       { grid-area: utensils; }
-    #area-direction      { grid-area: direction; }
-    #area-balcony        { grid-area: balcony; }
-    #area-sink           { grid-area: sink; }
+    .zone-b .map-card[data-title="黑板"] { background: #424242; }
+    .zone-b .map-card[data-title="黑板"] .map-title { color: #fff; }
+    .zone-a .map-card[data-title="保健股長"] { background: #fff9c4; border-color: #fbc02d; }
+    .zone-a .map-card[data-title="智窗"], .zone-a .map-card[data-title="慧窗"] { background: #bbdefb; }
+    .zone-b .map-card[data-title="回收"] { background: #c8e6c9; }
+    .zone-b .map-card[data-title="垃圾"] { background: #d7ccc8; }
+    .zone-d .map-card[data-title="陽台"] { background: #c8e6c9; }
+    .zone-d .map-card[data-title="洗手台"] { background: #b2ebf2; }
+    .zone-d .map-card[data-title="公用餐具"] { background: #ffe0b2; }
   </style>
 </head>
 <body>
@@ -324,38 +308,26 @@
       { id: "26", name: "26鍾牧辰", gender: "boy" }
     ];
 
-    // 外掃區職務（wide: 佔滿整列）
+    // 外掃區：第一列為衛生股長（獨立一整列），其餘6員分成2列，每列3格
     const defaultOuterJobs = [
-      { title: "🏪 FamilyMart", wide: true },
-      { title: "🚶 人行道", wide: true },
+      { title: "衛生股長", chief: true },
+      { title: "🏪 FamilyMart" },
+      { title: "🚶 人行道" },
       { title: "🍄 你家側" },
       { title: "🌳 大家側" },
       { title: "🚲 腳踏車棚" },
-      { title: "🧹 落葉清理區" },
-      { title: "🌱 環境巡守隊" }
+      { title: "🧹 落葉清理區" }
     ];
 
-    // 教室內掃職務：固定四區（area 對應 CSS grid-area，重新命名不會受標題文字影響）
-    const defaultInnerJobs = [
-      { title: "智窗", area: "smartwin" },
-      { title: "保健股長", area: "healthchief" },
-      { title: "慧窗", area: "huiwin" },
-      { title: "書櫃", area: "bookshelf" },
-      { title: "黑板", area: "blackboard" },
-      { title: "讀書角", area: "readingcorner" },
-      { title: "回收", area: "recycle" },
-      { title: "給愛麗絲", area: "trash" },
-      { title: "第五六排", area: "row56" },
-      { title: "第四排", area: "row4" },
-      { title: "第三排", area: "row3" },
-      { title: "第二排", area: "row2" },
-      { title: "第一排", area: "row1" },
-      { title: "走廊", area: "corridor" },
-      { title: "公用餐具", area: "utensils" },
-      { title: "前後左右", area: "direction" },
-      { title: "陽台", area: "balcony" },
-      { title: "洗手台", area: "sink" }
+    // 教室內掃職務：固定四區 A/B/C/D，各區由左至右排列
+    const innerZones = [
+      { key: "a", label: "A區", jobs: ["智窗", "保健股長", "慧窗"] },
+      { key: "b", label: "B區", jobs: ["書櫃", "黑板", "讀書角", "回收", "垃圾"] },
+      { key: "c", label: "C區", jobs: ["第五六排", "第四排", "第三排", "第二排", "第一排"] },
+      { key: "d", label: "D區", jobs: ["走廊", "公用餐具", "前後左右", "陽台", "洗手台"] }
     ];
+    // 攤平成一維陣列，用於索引存取（idx 對應各職務在雲端資料中的位置）
+    const defaultInnerJobs = innerZones.flatMap(z => z.jobs.map(title => ({ title, zone: z.key })));
 
     // 頁面初始化
     function init() {
@@ -393,6 +365,7 @@
     function makeMapCard(idx, prefix, title, extraClass) {
       const card = document.createElement('div');
       card.className = `map-card ${extraClass || ''}`;
+      card.setAttribute('data-title', title);
       card.innerHTML = `
         <div class="map-title" id="title-${prefix}-${idx}" contenteditable="${isEditable}" onblur="saveToCloud()">${title}</div>
         <div class="map-slot" id="slot-${prefix}-${idx}" onclick="handleSlotClick(this)"></div>
@@ -400,22 +373,52 @@
       return card;
     }
 
+    // 外掃區：第0筆(衛生股長)獨立一列，其餘6筆每3筆一列
     function renderOuterJobs() {
       const container = document.getElementById('outer-jobs');
       container.innerHTML = '';
-      defaultOuterJobs.forEach((job, idx) => {
-        const card = makeMapCard(idx, 'outer', job.title, job.wide ? 'wide' : '');
-        container.appendChild(card);
-      });
+
+      const chiefRow = document.createElement('div');
+      chiefRow.className = 'outer-row chief-row';
+      chiefRow.appendChild(makeMapCard(0, 'outer', defaultOuterJobs[0].title, 'chief'));
+      container.appendChild(chiefRow);
+
+      const rest = defaultOuterJobs.slice(1); // 6 筆
+      for (let r = 0; r < rest.length; r += 3) {
+        const row = document.createElement('div');
+        row.className = 'outer-row';
+        rest.slice(r, r + 3).forEach((job, i) => {
+          row.appendChild(makeMapCard(r + i + 1, 'outer', job.title, ''));
+        });
+        container.appendChild(row);
+      }
     }
 
+    // 教室內掃：依 A/B/C/D 四區個別成列，每區由左至右排列
     function renderInnerJobs() {
       const container = document.getElementById('inner-jobs');
       container.innerHTML = '';
-      defaultInnerJobs.forEach((job, idx) => {
-        const card = makeMapCard(idx, 'inner', job.title, `area-${job.area}`);
-        card.id = `area-${job.area}`;
-        container.appendChild(card);
+      let globalIdx = 0;
+
+      innerZones.forEach(zone => {
+        const zoneEl = document.createElement('div');
+        zoneEl.className = `zone zone-${zone.key}`;
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'zone-label';
+        labelEl.innerText = zone.label;
+        zoneEl.appendChild(labelEl);
+
+        const rowEl = document.createElement('div');
+        rowEl.className = `zone-row cols-${zone.jobs.length}`;
+
+        zone.jobs.forEach(title => {
+          rowEl.appendChild(makeMapCard(globalIdx, 'inner', title, ''));
+          globalIdx++;
+        });
+
+        zoneEl.appendChild(rowEl);
+        container.appendChild(zoneEl);
       });
     }
 
