@@ -521,33 +521,6 @@ if(prefix==='inner'){
       card.classList.add('sink');
 }
 
-  if(job.includes('智窗'))
-      card.classList.add('smart-window');
-
-  else if(job.includes('讀書角'))
-      card.classList.add('library-area');
-
-  else if(job.includes('黑板'))
-      card.classList.add('blackboard');
-
-  else if(job.includes('第一排') ||
-          job.includes('第二排') ||
-          job.includes('第三排') ||
-          job.includes('第四排') ||
-          job.includes('第五排') ||
-          job.includes('第六排'))
-      card.classList.add('row-area');
-
-  else if(job.includes('慧窗'))
-      card.classList.add('hui-window');
-
-  else if(job.includes('陽台'))
-      card.classList.add('balcony');
-
-  else if(job.includes('洗手台'))
-      card.classList.add('sink');
-}
-
 card.innerHTML=`
 <div
 class="map-title"
