@@ -308,6 +308,21 @@
 
 .sink{
   grid-column:6;
+.direction{
+  grid-column:1 / span 3;
+}
+
+.utensil{
+  grid-column:4 / span 3;
+}
+
+.balcony{
+  grid-column:1 / span 3;
+}
+
+.sink{
+  grid-column:4 / span 3;
+}
 }
   </style>
 </head>
@@ -406,43 +421,29 @@
 "🧹 落葉清理區",
 "🌱 環境巡守隊"
 ];
-    const defaultInnerJobs = ["🩺保健股長",
+    const defaultInnerJobs = [
+"保健股長",
+"智窗",
+"圖書角",
+"黑板",
 
-"🪟智窗",
+"第六排",
+"第五排",
+"第四排",
+"第三排",
+"第二排",
+"第一排",
 
-"🪟慧窗",
+"慧窗",
 
-"🖍黑板",
+"前後左右",
+"公用餐具",
 
-"🪑桌櫃",
+"陽台",
+"洗手台",
 
-"☀️陽台",
-
-"🏫走廊",
-
-"🗑倒垃圾",
-
-"♻️資源回收",
-
-"📖讀書角",
-
-"📚第一排",
-
-"📚第二排",
-
-"📚第三排",
-
-"📚第四排",
-
-"📚第五排",
-
-"📚第六排",
-
-"🚰洗手台",
-
-"🍱公用餐具"
+// 剩餘工作...
 ];
-
     // 頁面初始化
     function init() {
       renderBaseStructure();
@@ -544,6 +545,11 @@ if(prefix==='inner'){
 
   else if(job.includes('洗手台'))
       card.classList.add('sink');
+  else if(job.includes('前後左右'))
+    card.classList.add('direction');
+
+else if(job.includes('公用餐具'))
+    card.classList.add('utensil');
 }
 
 card.innerHTML=`
