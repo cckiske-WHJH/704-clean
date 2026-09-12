@@ -159,6 +159,45 @@
     }
 
     .drop-slot:empty::before { content: "點擊放入"; font-size: 0.75rem; color: #aaa; }
+    .map-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.map-card{
+  border:2px solid #2d3748;
+  border-radius:14px;
+  padding:8px;
+  min-height:120px;
+}
+
+.outer-map{
+  background:
+  linear-gradient(
+  #dcedc8,
+  #aed581
+  );
+}
+
+.inner-map{
+  background:
+  linear-gradient(
+  #fff8e1,
+  #fffde7
+  );
+}
+
+.map-title{
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+.map-slot{
+  min-height:50px;
+  border:2px dashed #999;
+  border-radius:10px;
+}
   </style>
 </head>
 <body>
@@ -177,14 +216,24 @@
   </div>
 
   <div class="section-box">
-    <div class="section-title" style="color: #2e7d32;">🧹 外掃區職務 (7)</div>
-    <div class="job-list" id="outer-jobs"></div>
-  </div>
 
-  <div class="section-box">
-    <div class="section-title" style="color: #1565c0;">🧽 內掃區職務 (18)</div>
-    <div class="job-list" id="inner-jobs"></div>
-  </div>
+<div class="section-title">
+🌲 Pikmin森林外掃區
+</div>
+
+<div id="outer-jobs"></div>
+
+</div>
+
+<div class="section-box">
+
+<div class="section-title">
+🏫 704教室俯視圖
+</div>
+
+<div id="inner-jobs"></div>
+
+</div>
 
   <script>
    const firebaseConfig = {
@@ -273,7 +322,54 @@
       });
     }
 
-    function renderJobList(containerId, jobs, prefix) {
+    function renderJobList(
+containerId,
+jobs,
+prefix
+){
+
+const container =
+document.getElementById(containerId);
+
+container.innerHTML='';
+
+container.className='map-grid';
+
+jobs.forEach((job,idx)=>{
+
+const card =
+document.createElement('div');
+
+card.className=
+`map-card ${
+prefix==='outer'
+?'outer-map'
+:'inner-map'
+}`;
+
+card.innerHTML=`
+<div
+class="map-title"
+id="title-${prefix}-${idx}"
+contenteditable="${isEditable}"
+onblur="saveToCloud()"
+>
+${job}
+</div>
+
+<div
+class="map-slot"
+id="slot-${prefix}-${idx}"
+onclick="handleSlotClick(this)"
+>
+</div>
+`;
+
+container.appendChild(card);
+
+});
+
+} {
       const container = document.getElementById(containerId);
       container.innerHTML = '';
       jobs.forEach((job, idx) => {
