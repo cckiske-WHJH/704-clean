@@ -423,15 +423,6 @@
     }
 
     // 將資料儲存至 Firebase 雲端
-    function saveToCloud() {
-      if (!dbRef || !isEditable) return;
-
-      const state = {
-        outerTitles: [],
-        innerTitles: [],
-        assignments: {} // slotId: studentId
-      };
-
 // 將資料儲存至 Firebase 雲端
 function saveToCloud() {
   if (!dbRef || !isEditable) return;
@@ -451,10 +442,26 @@ function saveToCloud() {
   dbRef.set(state);
 }
 
-    // 讀取並渲染雲端最新資料
-    function applyCloudData(data) {
-      // 1. 更新職稱
-    
+// 讀取並渲染雲端最新資料
+function applyCloudData(data) {
+  // 1. 重置所有學員回板凳區
+  const bench = document.getElementById('bench-area');
+  defaultStudents.forEach(s => {
+    const studentEl = document.getElementById(`student-${s.id}`);
+    if (studentEl) bench.appendChild(studentEl);
+  });
+
+  // 2. 根據雲端分派學員至對應位置
+  if (data.assignments) {
+    Object.keys(data.assignments).forEach(slotId => {
+      const slot = document.getElementById(slotId);
+      const studentEl = document.getElementById(data.assignments[slotId]);
+      if (slot && studentEl) {
+        slot.appendChild(studentEl);
+      }
+    });
+  }
+}
     // 解鎖密碼機制
     function toggleEdit() {
       if (!isEditable) {
