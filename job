@@ -312,7 +312,7 @@
 "🧹人行道機動區",
 
 "🌱環境巡守隊"];
-    const defaultInnerJobs = ["🩺保健股長",
+    const defaultInnerJobs = ["🩺內掃監督",
 
 "🪟智窗",
 
