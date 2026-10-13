@@ -432,56 +432,29 @@
         assignments: {} // slotId: studentId
       };
 
-      defaultOuterJobs.forEach((_, idx) => {
-        state.outerTitles.push(document.getElementById(`title-outer-${idx}`).innerText);
-        const slot = document.getElementById(`slot-outer-${idx}`);
-        if (slot.children.length > 0) state.assignments[`slot-outer-${idx}`] = slot.children[0].id;
-      });
+// 將資料儲存至 Firebase 雲端
+function saveToCloud() {
+  if (!dbRef || !isEditable) return;
 
-      defaultInnerJobs.forEach((_, idx) => {
-        state.innerTitles.push(document.getElementById(`title-inner-${idx}`).innerText);
-        const slot = document.getElementById(`slot-inner-${idx}`);
-        if (slot.children.length > 0) state.assignments[`slot-inner-${idx}`] = slot.children[0].id;
-      });
+  const state = { assignments: {} };
 
-      dbRef.set(state);
-    }
+  defaultOuterJobs.forEach((_, idx) => {
+    const slot = document.getElementById(`slot-outer-${idx}`);
+    if (slot.children.length > 0) state.assignments[`slot-outer-${idx}`] = slot.children[0].id;
+  });
+
+  defaultInnerJobs.forEach((_, idx) => {
+    const slot = document.getElementById(`slot-inner-${idx}`);
+    if (slot.children.length > 0) state.assignments[`slot-inner-${idx}`] = slot.children[0].id;
+  });
+
+  dbRef.set(state);
+}
 
     // 讀取並渲染雲端最新資料
     function applyCloudData(data) {
       // 1. 更新職稱
-      if (data.outerTitles) {
-        data.outerTitles.forEach((title, idx) => {
-          const el = document.getElementById(`title-outer-${idx}`);
-          if (el && el !== document.activeElement) el.innerText = title;
-        });
-      }
-      if (data.innerTitles) {
-        data.innerTitles.forEach((title, idx) => {
-          const el = document.getElementById(`title-inner-${idx}`);
-          if (el && el !== document.activeElement) el.innerText = title;
-        });
-      }
-
-      // 2. 重置所有學員回板凳區
-      const bench = document.getElementById('bench-area');
-      defaultStudents.forEach(s => {
-        const studentEl = document.getElementById(`student-${s.id}`);
-        if (studentEl) bench.appendChild(studentEl);
-      });
-
-      // 3. 根據雲端分派學員至對應位置
-      if (data.assignments) {
-        Object.keys(data.assignments).forEach(slotId => {
-          const slot = document.getElementById(slotId);
-          const studentEl = document.getElementById(data.assignments[slotId]);
-          if (slot && studentEl) {
-            slot.appendChild(studentEl);
-          }
-        });
-      }
-    }
-
+    
     // 解鎖密碼機制
     function toggleEdit() {
       if (!isEditable) {
